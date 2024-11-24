@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import { Venue } from "../models/venue.model.js";
+
 const generateJwtToken = (email, id) => {
   return jwt.sign(
     { email: email, _id: id },
@@ -36,7 +37,9 @@ const signInUser = async (req, res) => {
       // Fetch venue data where userId matches user's ID
       const venues = await Venue.find({ userId: existingUser._id });
 
-      return res.status(200).json({ data: { user:existingUser, venues }, token });
+      return res
+        .status(200)
+        .json({ data: { user: existingUser, venues }, token });
     }
 
     //if user doesn't exist then create new user and save
@@ -45,7 +48,9 @@ const signInUser = async (req, res) => {
     // Fetch venue data where userId matches user's ID
     // const venues = await Venue.find({ userId: existingUser._id });
     const token = generateJwtToken(email, response._id);
-    return res.status(200).json({ data: { user:response, venues: [] }, token });
+    return res
+      .status(200)
+      .json({ data: { user: response, venues: [] }, token });
   } catch (error) {
     // Check for Mongoose validation errors
     if (error.name === "ValidationError") {

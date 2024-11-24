@@ -4,28 +4,34 @@ import axios from "axios";
 export const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
+  // for storing current user data
   const [userData, setUserData] = useState({});
+
+  //for storing all venues of current user
   const [userVenues, setUserVenues] = useState([]);
+
+  //for storing jwt token of current user
   const [token, setToken] = useState("");
-  // const selectedVenue = useRef(null);
+
+  //for storing current selected venue by user
   const [selectedVenue, setSelectedVenue] = useState(null);
 
   const navigate = useNavigate();
 
+  // to store data like token in local storeage in variables
   const setUserDataLocal = (currentUserData) => {
     setToken(currentUserData.token);
     localStorage.setItem("Token", currentUserData.token);
     setUserData(currentUserData.data.user);
     setUserVenues(currentUserData.data.venues);
+
     // Set selected venue after venues have been updated
     if (currentUserData.data.venues && currentUserData.data.venues.length > 0) {
-      // selectedVenue.current = currentUserData.data.venues[0];
       setSelectedVenue(currentUserData.data.venues[0]);
-    } else {
-      // selectedVenue.current = null;
     }
   };
 
+  // getting user token from local and fetching data from api , if error in token then go to login
   const getUserDataLocal = async () => {
     try {
       const userToken = localStorage.getItem("Token");
@@ -48,16 +54,11 @@ export const AuthContextProvider = ({ children }) => {
       });
       if (response.status === 200) {
         setUserData(response.data.data.user);
-
         setUserVenues(response.data.data.venues);
-        // Set the selected venue after userVenues are updated
-        if (response.data.data.venues && response.data.data.venues.length > 0) {
-          // selectedVenue.current = response.data.data.venues[0];
-          setSelectedVenue(response.data.data.venues[0]);
-        } else {
-          // selectedVenue.current = null;
-        }
 
+        if (response.data.data.venues && response.data.data.venues.length > 0) {
+          setSelectedVenue(response.data.data.venues[0]);
+        }
         // Do not navigate until selectedVenue is set
         if (selectedVenue) {
           navigate(`/venue/${selectedVenue.venueId}/dashboard`);
@@ -86,8 +87,6 @@ export const AuthContextProvider = ({ children }) => {
       });
       if (response.status === 200) {
         const currentUserData = response.data;
-        console.log(currentUserData.data);
-
         setUserDataLocal(currentUserData);
         if (selectedVenue) {
           navigate(`/venue/${selectedVenue.venueId}/dashboard`);

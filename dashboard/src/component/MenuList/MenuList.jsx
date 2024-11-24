@@ -1,4 +1,4 @@
-import React, { useState, useEffect ,useContext} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./MenuList.css";
 import ToggleMenu from "../ToggleMenu/ToggleMenu.jsx";
 import axios from "axios";
@@ -6,7 +6,7 @@ import { AuthContext } from "../../context/AuthContext.jsx";
 const MenuList = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [draggedIndex, setDraggedIndex] = useState(null);
-const {selectedVenue}= useContext(AuthContext)
+  const { selectedVenue } = useContext(AuthContext);
   const [isMenuActive, setMenuActive] = useState(false);
 
   const handleDragStart = (index) => {
@@ -36,12 +36,9 @@ const {selectedVenue}= useContext(AuthContext)
   const fetchMenus = async () => {
     try {
       const token = localStorage.getItem("Token");
-      const response = await axios.get(
-        `http://localhost:3000/menu/${selectedVenue._id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.get(`http://localhost:3000/menu/${selectedVenue._id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setMenuItems(response.data.data || []);
 
       console.log("response", response.data.data);

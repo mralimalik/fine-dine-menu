@@ -1,22 +1,23 @@
 import React from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { useContext, useState} from "react";
+import { useContext, useState } from "react";
 const Login = () => {
+  //getting sign in function from context
   const { signIn } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   // Handle form submission
   const handleLogin = async (e) => {
-    e.preventDefault(); // Prevent the default form submission
+    e.preventDefault();
     if (email && password) {
       await signIn(email, password); // Call the signIn function from context
     } else {
       console.log("Please enter both email and password.");
     }
   };
-    // Button background color condition based on email and password fields
-    const buttonBgColor = email && password ? "bg-blue-600" : "bg-violet-200";
+  // Button background color condition based on email and password fields
+  const buttonBgColor = email && password ? "bg-blue-600" : "bg-violet-200";
   return (
     <div className="h-screen bg-slate-400 flex justify-center items-center">
       <div className=" w-[400px] h-[350px] bg-white flex flex-col p-5 gap-3 rounded-md">
@@ -44,7 +45,7 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-        <button  onClick={handleLogin} className={`${buttonBgColor} p-1 text-white border rounded-md`}>
+        <button onClick={handleLogin} className={`${buttonBgColor} p-1 text-white border rounded-md`}>
           Login
         </button>
       </div>

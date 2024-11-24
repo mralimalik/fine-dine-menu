@@ -4,9 +4,12 @@ import { VenueContext } from "../../context/VenueContext.jsx";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
-const AddVenueModal = ({ isOpen, onClose,}) => {
+const AddVenueModal = ({ isOpen, onClose }) => {
+  // for venue modal dialog ref
   const { venueModalRef } = useContext(VenueContext);
-  const { setUserVenues,selectedVenue,userVenues,setSelectedVenue} = useContext(AuthContext);
+
+  // getting all venues, selected current venue, seting current venue
+  const { setUserVenues, selectedVenue, userVenues, setSelectedVenue } = useContext(AuthContext);
 
   const [venueName, setVenueName] = useState("");
   const [country, setCountry] = useState("");
@@ -37,21 +40,20 @@ const AddVenueModal = ({ isOpen, onClose,}) => {
       if (response.data?.data) {
         console.log("Venue created successfully:", response.data.data);
 
-        if(selectedVenue){
-          setUserVenues((prev)=>[...prev,response.data.data])
-        }else{
-   // Update user venues state
-            setUserVenues((prev) => [...(prev || []), response.data.data]);
-         setSelectedVenue(response.data.data);
+        if (selectedVenue) {
+          // if currentVenue is not empty then merge
+          setUserVenues((prev) => [...prev, response.data.data]);
+        } else {
+          // if currentVenue is  empty then merge, and also set current venue with data
+          setUserVenues((prev) => [...(prev || []), response.data.data]);
+          setSelectedVenue(response.data.data);
+          //after setting then navigate with venueId
           navigate(`/venue/${response.data.data.venueId}/dashboard`);
-         
-         
         }
         onClose();
       }
     } catch (err) {
       console.log("Error creating venue:", err);
-      // setError("An error occurred while creating the venue.");
     }
   };
   if (!isOpen) return null;
@@ -80,12 +82,7 @@ const AddVenueModal = ({ isOpen, onClose,}) => {
 
           <div className="form-group">
             <label htmlFor="country">Country</label>
-            <select
-              id="country"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              required
-            >
+            <select id="country" value={country} onChange={(e) => setCountry(e.target.value)} required>
               <option value="" disabled>
                 Select Country
               </option>

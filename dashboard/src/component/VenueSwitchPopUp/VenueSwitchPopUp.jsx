@@ -8,21 +8,19 @@ import { AuthContext } from "../../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 const VenueSwitchPopUp = () => {
+  // getting venue switch pop ref and other values
   const { showVeneueSwitchPopUp, venueSwitchRef } = useContext(SidebarContext);
-  const { handleModalOpen, handleModalClose, isModalOpen } =
-    useContext(VenueContext);
-  const { userVenues, setUserVenues, selectedVenue, setSelectedVenue } =
-    useContext(AuthContext);
-  const navigate = useNavigate();
+  const { handleModalOpen, handleModalClose, isModalOpen } = useContext(VenueContext);
 
-  // const venues = ["Ali", "Mr"];
+  // getting current selected venue, all venues
+  const { userVenues, setUserVenues, selectedVenue, setSelectedVenue } = useContext(AuthContext);
+
+  const navigate = useNavigate();
 
   return (
     <div
       ref={venueSwitchRef}
-      className={`venue-pop-up ${
-        showVeneueSwitchPopUp === true ? "venue-pop-up-open" : ""
-      }`}
+      className={`venue-pop-up ${showVeneueSwitchPopUp === true ? "venue-pop-up-open" : ""}`}
     >
       <input
         className="w-full p-1 border outline-none rounded-[10px] my-2 "
@@ -39,16 +37,12 @@ const VenueSwitchPopUp = () => {
         </p>
       </div>
       {userVenues.length === 0 ? (
-        <div className=" h-[200px] flex items-center justify-center">
-          No Venue
-        </div>
+        <div className=" h-[200px] flex items-center justify-center">No Venue</div>
       ) : (
         userVenues.map((item, index) => (
           <div
             className={`venue-pop-up-item rounded-md ${
-              selectedVenue && selectedVenue.venueId === item.venueId
-                ? "bg-violet-100"
-                : ""
+              selectedVenue && selectedVenue.venueId === item.venueId ? "bg-violet-100" : ""
             } cursor-pointer`}
             onClick={() => {
               setSelectedVenue(item);

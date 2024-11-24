@@ -8,20 +8,27 @@ import { AuthContext } from "../../context/AuthContext.jsx";
 import Logo from "../../assets/finedinemenu.svg";
 const Sidebar = () => {
   let items = ["Dashboard", "Menu Management"];
+
+  // getting current venue data
   const { selectedVenue } = useContext(AuthContext);
 
-  const { selectedItemIndex, setSelectedItemIndex, handleVenuePopUp } =
-    useContext(SidebarContext);
+  //getting selected item (route) index , handle venue switch pop up from sidebar context
+  const { selectedItemIndex, setSelectedItemIndex, handleVenuePopUp } = useContext(SidebarContext);
 
+  // to navigate to any route
   const navigate = useNavigate();
+
+  // to get location of current link
+  const location = useLocation();
 
   const handleItemClick = (index, item) => {
     setSelectedItemIndex(index);
     let venuePath;
-    if(selectedVenue){
-       venuePath = `/venue/${selectedVenue.venueId}`;
-    }else{
-       venuePath = `/venue`;
+    //if selectedVenue(current) is not null then navigate with param of venueId else no param
+    if (selectedVenue) {
+      venuePath = `/venue/${selectedVenue.venueId}`;
+    } else {
+      venuePath = `/venue`;
     }
     if (item === "Dashboard") {
       navigate(`${venuePath}/dashboard`);
@@ -30,7 +37,6 @@ const Sidebar = () => {
     }
   };
 
-  const location = useLocation();
   useEffect(() => {
     if (selectedVenue) {
       const venuePath = `/venue/${selectedVenue.venueId}`;
@@ -51,13 +57,9 @@ const Sidebar = () => {
       <div className="venue-switch" onClick={handleVenuePopUp}>
         <p>{selectedVenue ? selectedVenue.venueName : "Create Venue Here"}</p>
       </div>
-      {
-      
-      items.map((item, index) => (
+      {items.map((item, index) => (
         <div
-          className={`sidebar-item ${
-            selectedItemIndex === index ? "sidebar-item-selected" : ""
-          } `}
+          className={`sidebar-item ${selectedItemIndex === index ? "sidebar-item-selected" : ""} `}
           key={index}
           onClick={() => handleItemClick(index, item)}
         >

@@ -2,6 +2,8 @@ import React from "react";
 import MenuItemList from "../MenuItemList/MenuItemList.jsx";
 
 const MenuSectionList = ({ sectionData, subSections, items }) => {
+
+  // function to render subsections if there is any
   const renderSections = () => {
     return (
       subSections.length > 0 && (
@@ -19,6 +21,7 @@ const MenuSectionList = ({ sectionData, subSections, items }) => {
     );
   };
 
+  // function to render subitems in any subsection if there is any
   const renderItems = () => {
     return (
       items.length > 0 && (

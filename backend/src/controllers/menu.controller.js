@@ -2,6 +2,7 @@ import { Menu } from "../models/menu.model.js";
 import mongoose from "mongoose";
 import { MenuSection } from "../models/menu.section.js";
 import { MenuItem } from "../models/menu.item.js";
+
 // to get all menues of particular venue
 const getAllMenues = async (req, res) => {
   // Access venueId from URL params correctly
@@ -13,6 +14,7 @@ const getAllMenues = async (req, res) => {
   }
 
   try {
+    //convert string id to mongo obj
     let objectId = new mongoose.Types.ObjectId(venueId);
     const menus = await Menu.find({ venueId: objectId });
     return res.status(200).json({ data: menus });
@@ -24,6 +26,7 @@ const getAllMenues = async (req, res) => {
 
 // to update sepecific menue
 const updateMenu = async (req, res) => {
+  //get required data from body and menuId from params
   const { menuName, isActive } = req.body;
   const { menuId } = req.params;
 
@@ -41,7 +44,7 @@ const updateMenu = async (req, res) => {
     const updateData = {};
     if (menuName) updateData.menuName = menuName;
     if (isActive) updateData.isActive = isActive;
-
+    // find the menu id and replace with new data
     const updatedMenu = await Menu.findOneAndUpdate(
       { _id: menuId },
       { $set: updateData },

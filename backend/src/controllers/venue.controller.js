@@ -12,6 +12,7 @@ const createRandomVenueId = () => {
 
 const createVenue = async (req, res) => {
   try {
+    //get user id from auth jwt and required name and country
     const userId = req.user?._id;
     if (!userId) {
       return res.status(400).json({ message: "User id is missing" });
@@ -23,6 +24,7 @@ const createVenue = async (req, res) => {
         .json({ message: "venueName and country is required" });
     }
 
+    //create random short venueId
     const venueId = createRandomVenueId();
     const newVenue = new Venue({ venueName, country, venueId, userId });
     await newVenue.save().then((response) => {
@@ -98,7 +100,7 @@ const updateVenueById = async (req, res) => {
 // Function to fetch a venue by venueId for the logged-in user
 const getVenueById = async (req, res) => {
   try {
-    const userId = req.user?._id; 
+    const userId = req.user?._id;
     if (!userId) {
       return res.status(400).json({ message: "User ID is missing" });
     }
@@ -112,7 +114,9 @@ const getVenueById = async (req, res) => {
     const venue = await Venue.findOne({ venueId, userId });
 
     if (!venue) {
-      return res.status(404).json({ message: "Venue not found or unauthorized" });
+      return res
+        .status(404)
+        .json({ message: "Venue not found or unauthorized" });
     }
 
     // Return the venue data
@@ -123,4 +127,4 @@ const getVenueById = async (req, res) => {
   }
 };
 
-export { createVenue,getAllVenuesByUser,updateVenueById,getVenueById };
+export { createVenue, getAllVenuesByUser, updateVenueById, getVenueById };

@@ -2,8 +2,11 @@ import { useState, useEffect, createContext, useRef } from "react";
 import { useParams } from "react-router-dom";
 export const VenueContext = createContext();
 
-export const VenueContextProvider = ({ children, venueId}) => {
+export const VenueContextProvider = ({ children, venueId }) => {
+  // for storing add venue dialog to show or not
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // for storing add venue dialog ref
   const venueModalRef = useRef(null);
 
   const handleModalOpen = () => {
@@ -18,7 +21,6 @@ export const VenueContextProvider = ({ children, venueId}) => {
     console.log("Function running again as venueId changed");
   }, [venueId]);
 
-  
   return (
     <VenueContext.Provider
       value={{
