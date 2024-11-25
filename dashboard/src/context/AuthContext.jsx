@@ -95,7 +95,7 @@ export const AuthContextProvider = ({ children }) => {
         }
       }
     } catch (err) {
-      console.error("Error signing in:", err.response?.data?.message || err);
+      throw err.response?.data?.message || "An error occurred during sign-in.";
     }
   };
 

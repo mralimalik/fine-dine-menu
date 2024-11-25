@@ -15,6 +15,12 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
+// Root route
+app.get("/", (req, res) => {
+  res.send("Welcome to the API! Use /user, /menu, or /venue endpoints.");
+});
+
+
 app.use("/user", userRouter);
 app.use("/menu", menuRouter);
 app.use("/venue", venueRouter);

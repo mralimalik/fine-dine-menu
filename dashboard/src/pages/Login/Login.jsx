@@ -1,21 +1,42 @@
 import React from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from "react-toastify";
+
 const Login = () => {
   //getting sign in function from context
   const { signIn } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // Handle form submission
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (email && password) {
+
+    // Validation checks
+    if (!email) {
+      toast.error("Please enter your email");
+      return;
+    }
+
+    if (!password) {
+      toast.error("Please enter your password");
+      return;
+    }
+
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters long");
+      return;
+    }
+
+    try {
       await signIn(email, password); // Call the signIn function from context
-    } else {
-      console.log("Please enter both email and password.");
+      toast.success("Login successful!");
+    } catch (error) {
+      toast.error(error);
     }
   };
+
   // Button background color condition based on email and password fields
   const buttonBgColor = email && password ? "bg-blue-600" : "bg-violet-200";
   return (
@@ -48,6 +69,7 @@ const Login = () => {
         <button onClick={handleLogin} className={`${buttonBgColor} p-1 text-white border rounded-md`}>
           Login
         </button>
+        <ToastContainer />
       </div>
     </div>
   );
