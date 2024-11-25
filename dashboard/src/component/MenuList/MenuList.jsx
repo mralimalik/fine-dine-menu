@@ -3,11 +3,12 @@ import "./MenuList.css";
 import ToggleMenu from "../ToggleMenu/ToggleMenu.jsx";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext.jsx";
+import { MenuContext } from "../../context/MenuContext.jsx";
 const MenuList = () => {
-  const [menuItems, setMenuItems] = useState([]);
-  const [draggedIndex, setDraggedIndex] = useState(null);
+  const { setMenuItems, menuItems, formatDate } = useContext(MenuContext);
   const { selectedVenue } = useContext(AuthContext);
-  const [isMenuActive, setMenuActive] = useState(false);
+
+  const [draggedIndex, setDraggedIndex] = useState(null);
 
   const handleDragStart = (index) => {
     setDraggedIndex(index);
@@ -51,6 +52,8 @@ const MenuList = () => {
     updatedMenus[index].isActive = !updatedMenus[index].isActive; // Toggle isActive
     setMenuItems(updatedMenus);
   };
+
+  
   useEffect(() => {
     fetchMenus();
   }, [selectedVenue]);
@@ -59,7 +62,7 @@ const MenuList = () => {
     <div>
       {menuItems.length === 0 ? (
         <div className="h-[200px] flex items-center justify-center">
-          <p>No Menu Created</p>
+          <p>{selectedVenue ? "No Menu Created" : "Create Venue First"}</p>
         </div>
       ) : (
         menuItems.map((data, index) => (
@@ -81,7 +84,10 @@ const MenuList = () => {
                 </div>
                 <div className="availability-text">Availability: Always</div>
                 <div className="menu-info-row">
-                  <p>4 Sections, 7 Items - Last updated on Nov 22, 2024 - </p>
+                  <p>
+                    {data.sections} Sections, {data.items} Items - Last updated on{" "}
+                    {formatDate(data.updatedAt)} -{" "}
+                  </p>
                   <p>Dine-in QR -</p>
                   <p>Pick-up -</p>
                   <p>Delivery</p>

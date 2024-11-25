@@ -47,10 +47,10 @@ const signInUser = async (req, res) => {
     await newUser.save();
     // Fetch venue data where userId matches user's ID
     // const venues = await Venue.find({ userId: existingUser._id });
-    const token = generateJwtToken(email, response._id);
+    const token = generateJwtToken(email, newUser._id);
     return res
       .status(200)
-      .json({ data: { user: response, venues: [] }, token });
+      .json({ data: { user: newUser, venues: [] }, token });
   } catch (error) {
     // Check for Mongoose validation errors
     if (error.name === "ValidationError") {

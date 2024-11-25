@@ -7,14 +7,15 @@ import MenuEditor from "./pages/MenuEditor/MenuEditor.jsx";
 import { SidebarContextProvider } from "./context/SidebarContext.jsx";
 import { VenueContextProvider } from "./context/VenueContext.jsx";
 import { AuthContextProvider } from "./context/AuthContext.jsx";
-
+import { MenuContextProvider } from "./context/MenuContext.jsx";
 function App() {
   return (
     <BrowserRouter>
       <AuthContextProvider>
         <SidebarContextProvider>
           <VenueContextProvider>
-            <Routes>
+         <MenuContextProvider>
+         <Routes>
               {/* Default Route */}
               <Route path="/" element={<Navigate to="/login" replace />} />
 
@@ -32,6 +33,7 @@ function App() {
               {/* Catch-all Route */}
               <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
+         </MenuContextProvider>
           </VenueContextProvider>
         </SidebarContextProvider>
       </AuthContextProvider>

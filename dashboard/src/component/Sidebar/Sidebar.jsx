@@ -5,7 +5,7 @@ import { SidebarContext } from "../../context/SidebarContext.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import { VenueContext } from "../../context/VenueContext.jsx";
 import { AuthContext } from "../../context/AuthContext.jsx";
-import Logo from "../../assets/finedinemenu.svg";
+import Logo from "../../assets/finedinemenu.webp";
 const Sidebar = () => {
   let items = ["Dashboard", "Menu Management"];
 
@@ -52,7 +52,9 @@ const Sidebar = () => {
 
   return (
     <div className="sidebar">
-      <img src={Logo} alt="" className="logo-img h-5 m-3" />
+    <div className="image-log ">
+    <img src={Logo} alt="" className="logo-img h-14 m-3" />
+    </div>
 
       <div className="venue-switch" onClick={handleVenuePopUp}>
         <p>{selectedVenue ? selectedVenue.venueName : "Create Venue Here"}</p>
