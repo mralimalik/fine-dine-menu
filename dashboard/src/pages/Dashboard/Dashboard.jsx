@@ -11,6 +11,7 @@ const Dashboard = () => {
   const formattedDate = format(currentDate, "EEEE, dd MMMM HH:mm");
   const { userData, selectedVenue } = useContext(AuthContext);
 
+  const previewLink = selectedVenue ? `https://qr-menu-7ie2.vercel.app/${selectedVenue?.venueId}` : "#";
   return (
     <div className="main-dashboard">
       <div className="welcome-div">
@@ -30,7 +31,26 @@ const Dashboard = () => {
               ? "Scan the QR code or use the link to view your brand new menu."
               : "Get your QR code by creating new venue"}
           </h4>
-          <button className="preview-button">Preview</button>
+          {/* <button
+            className="preview-button"
+            onClick={() => `https://qr-menu-7ie2.vercel.app/${selectedVenue?.venueId} `}
+          >
+            Preview
+          </button> */}
+          <a
+            href={previewLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`preview-button`}
+            onClick={(e) => {
+              if (!selectedVenue) {
+                e.preventDefault(); // Prevent navigation if no venue is selected
+                alert("Please create a venue first.");
+              }
+            }}
+          >
+            Preview
+          </a>
         </div>
 
         <div className="phone-qr-position-div">

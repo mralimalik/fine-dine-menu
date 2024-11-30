@@ -142,7 +142,7 @@ const UpdateTableSheet = () => {
   const generateQRCode = async () => {
     try {
       const url = await QRCode.toDataURL(
-        `https://qr.finedinemenu.com/${selectedVenue.venueId}?table=${tableToEdit._id}`,
+        `https://qr-menu-7ie2.vercel.app/${selectedVenue.venueId}?table=${tableToEdit._id}`,
         {
           color: {
             dark: "#8A2BE2", // Blue-Violet color for the QR code

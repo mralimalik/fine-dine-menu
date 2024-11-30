@@ -54,7 +54,9 @@
   border: none;
   font-size: 14px;
   width: 100px;
+  text-align: center;
 }
+
 .phone-qr-position-div{
 display: flex;
 position: relative;

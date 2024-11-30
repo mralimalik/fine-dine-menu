@@ -195,7 +195,7 @@ export const TableContextProvider = ({ children }) => {
       // If the table exists, generate a QR code for it
       if (table) {
         // Construct the URL for the QR code with the venueId and tableId
-        const qrCodeUrl = `https://qr.finedinemenu.com/${venueId}?table=${tableId}`;
+        const qrCodeUrl = `https://qr-menu-7ie2.vercel.app/${venueId}?table=${tableId}`;
 
         // Create a new canvas element to render the QR code
         const canvas = document.createElement("canvas");

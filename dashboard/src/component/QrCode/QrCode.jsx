@@ -45,7 +45,7 @@ function QrCode() {
         ref={qrCodeRef}
       >
         <QRCode
-          value={`https://qr.finedinemenu.com/${selectedVenue?.venueId}`}
+          value={`https://qr-menu-7ie2.vercel.app/${selectedVenue?.venueId}`}
           size={256}
           style={{ height: "auto", maxWidth: "100%", width: "100%" }}
           id="canvasqr"
