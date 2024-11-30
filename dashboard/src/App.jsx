@@ -8,32 +8,38 @@ import { SidebarContextProvider } from "./context/SidebarContext.jsx";
 import { VenueContextProvider } from "./context/VenueContext.jsx";
 import { AuthContextProvider } from "./context/AuthContext.jsx";
 import { MenuContextProvider } from "./context/MenuContext.jsx";
+import { TableContextProvider } from "./context/TablesContext.jsx";
+import OperationMain from "./pages/Settings/Operations/OperationMain.jsx";
 function App() {
   return (
     <BrowserRouter>
       <AuthContextProvider>
         <SidebarContextProvider>
           <VenueContextProvider>
-         <MenuContextProvider>
-         <Routes>
-              {/* Default Route */}
-              <Route path="/" element={<Navigate to="/login" replace />} />
+            <MenuContextProvider>
+              <TableContextProvider>
+                <Routes>
+                  {/* Default Route */}
+                  <Route path="/" element={<Navigate to="/login" replace />} />
 
-              {/* Login Page */}
-              <Route path="login" element={<Login />} />
+                  {/* Login Page */}
+                  <Route path="login" element={<Login />} />
 
-              {/* Protected Routes */}
-              <Route path="venue/:venueId?" element={<Main />}>
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="menu-management" element={<MenuManagement />}>
-                  <Route path=":menuId" element={<MenuEditor />} />
-                </Route>
-              </Route>
+                  {/* Protected Routes */}
+                  <Route path="venue/:venueId?" element={<Main />}>
+                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="menu-management" element={<MenuManagement />}/>
+                    <Route path="menu-management/:menuId" element={<MenuEditor />} />
 
-              {/* Catch-all Route */}
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
-         </MenuContextProvider>
+                    <Route path="operations" element={<OperationMain />}/>
+
+                  </Route>
+
+                  {/* Catch-all Route */}
+                  {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
+                </Routes>
+              </TableContextProvider>
+            </MenuContextProvider>
           </VenueContextProvider>
         </SidebarContextProvider>
       </AuthContextProvider>

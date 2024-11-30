@@ -4,7 +4,9 @@ import ToggleMenu from "../ToggleMenu/ToggleMenu.jsx";
 import axios from "axios";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import { MenuContext } from "../../context/MenuContext.jsx";
+import { useNavigate } from "react-router-dom";
 const MenuList = () => {
+  const navigate = useNavigate();
   const { setMenuItems, menuItems, formatDate } = useContext(MenuContext);
   const { selectedVenue } = useContext(AuthContext);
 
@@ -53,7 +55,17 @@ const MenuList = () => {
     setMenuItems(updatedMenus);
   };
 
-  
+  // Navigate to MenuEditor with the selected menuId
+  const handleMenuClick = (menuId) => {
+    try {
+      navigate(`/venue/${selectedVenue.venueId}/menu-management/${menuId}`);
+      console.log("navigated");
+      
+    } catch (error) {
+      console.error("Navigation error:", error);
+    }
+  };
+
   useEffect(() => {
     fetchMenus();
   }, [selectedVenue]);
@@ -73,6 +85,7 @@ const MenuList = () => {
             onDragStart={() => handleDragStart(index)}
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, index)}
+            onClick={() => handleMenuClick(data._id)} 
           >
             <div className="card-left-div">
               <div className="menu-drag-handle-nograb">---</div>

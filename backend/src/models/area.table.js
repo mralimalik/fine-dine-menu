@@ -1,13 +1,10 @@
 import mongoose from "mongoose";
-const menuItemSchema = new mongoose.Schema(
+const areaTableSchema = new mongoose.Schema(
   {
-    itemName: {
+    tableName: {
       type: String,
       required: true,
       trim: true,
-    },
-    position: {
-      type: Number,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -19,30 +16,25 @@ const menuItemSchema = new mongoose.Schema(
       ref: "Venue",
       required: true,
     },
-    menuId: {
+    areaId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Menu",
+      ref: "Area",
       required: true,
     },
-    parentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "MenuSection",
-      default: null
-    },
-    isActive: {
+    onlineTableReservation: {
       type: Boolean,
-      default: true,
+      default: false,
     },
-    type: {
-      type: String,
-      enum: ["ITEM"],
-      required: true,
+    minSeats: {
+      type: Number,
+      default:1
     },
-    price:{
-        type:Number,
+    maxSeats: {
+      type: Number,
+      default:4
     },
   },
   { timestamps: true }
 );
 
-export const MenuItem = mongoose.model("MenuItem", menuItemSchema);
+export const AreaTable = mongoose.model("AreaTable", areaTableSchema);

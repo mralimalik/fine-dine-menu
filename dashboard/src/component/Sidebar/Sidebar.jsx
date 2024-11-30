@@ -7,7 +7,7 @@ import { VenueContext } from "../../context/VenueContext.jsx";
 import { AuthContext } from "../../context/AuthContext.jsx";
 import Logo from "../../assets/finedinemenu.webp";
 const Sidebar = () => {
-  let items = ["Dashboard", "Menu Management"];
+  let items = ["Dashboard", "Menu Management", "Operations"];
 
   // getting current venue data
   const { selectedVenue } = useContext(AuthContext);
@@ -34,27 +34,31 @@ const Sidebar = () => {
       navigate(`${venuePath}/dashboard`);
     } else if (item === "Menu Management") {
       navigate(`${venuePath}/menu-management`);
+    } else if (item === "Operations") {
+      navigate(`${venuePath}/operations`);
     }
   };
 
   useEffect(() => {
     if (selectedVenue) {
       const venuePath = `/venue/${selectedVenue.venueId}`;
-
       // Check the current URL and map it to the correct sidebar item
       if (location.pathname.includes(`${venuePath}/dashboard`)) {
         setSelectedItemIndex(0); // Set "Dashboard" as selected
       } else if (location.pathname.includes(`${venuePath}/menu-management`)) {
         setSelectedItemIndex(1); // Set "Menu Management" as selected
+      } else if (location.pathname.includes(`${venuePath}/operations`)) {
+        setSelectedItemIndex(2); // Set "Menu Management" as selected
       }
+      console.log("Side bar item");
     }
-  }, [location.pathname, setSelectedItemIndex, selectedVenue?.venueId]);
+  }, [location.pathname, setSelectedItemIndex, selectedVenue]);
 
   return (
     <div className="sidebar">
-    <div className="image-log ">
-    <img src={Logo} alt="" className="logo-img h-14 m-3" />
-    </div>
+      <div className="image-log ">
+        <img src={Logo} alt="" className="logo-img h-14 m-3" />
+      </div>
 
       <div className="venue-switch" onClick={handleVenuePopUp}>
         <p>{selectedVenue ? selectedVenue.venueName : "Create Venue Here"}</p>

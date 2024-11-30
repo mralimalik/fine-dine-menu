@@ -23,6 +23,8 @@ import { Venue } from "../models/venue.model.js";
 //     return res.status(500).json({ message: "Server error", error });
 //   }
 // };
+
+//get all menues for dashboard
 const getAllMenues = async (req, res) => {
   const { venueId } = req.params;
 
@@ -93,7 +95,7 @@ const updateMenu = async (req, res) => {
 
 // get all menu items with sections and children
 const getMenuItemsWithSections = async (req, res) => {
-  const { menuId } = req.body;
+  const { menuId } = req.params;
 
   if (!menuId) {
     return res.status(400).json({ error: "menuId is required" });
@@ -237,6 +239,7 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
+        position:1
       },
       {
         sectionName: "Salads",
@@ -246,6 +249,7 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
+        position:2
       },
       {
         sectionName: "Desserts",
@@ -255,6 +259,7 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
+        position:3
       },
     ];
 
@@ -271,6 +276,7 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
+        position:1
       },
       {
         isActive: false,
@@ -281,6 +287,7 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
+        position:2
       },
     ];
     const section2Items = [
@@ -293,6 +300,7 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
+        position:1
       },
       {
         isActive: false,
@@ -303,6 +311,7 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
+        position:2
       },
     ];
     const section3Items = [
@@ -315,6 +324,7 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
+        position:1,
       },
       {
         isActive: false,
@@ -325,8 +335,10 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
+        position:2
       },
     ];
+
     // Save the menu items
     await MenuItem.insertMany([...section1Items, ...section2Items, ...section3Items]);
 
@@ -341,4 +353,139 @@ const createMenuWithItemsSections = async (req, res) => {
     res.status(500).json({ message: "Something went wrong", e });
   }
 };
-export { getAllMenues, updateMenu, getMenuItemsWithSections, createMenuWitoutItems,createMenuWithItemsSections };
+
+//get  menues for qr client menu
+const getMenuData = async (req, res) => {
+  const { venueId, menuId } = req.params;
+
+  if (!venueId) {
+    return res.status(400).json({ message: "venueId is required" });
+  }
+  if (!menuId) {
+    return res.status(400).json({ message: "menuId is required" });
+  }
+  try {
+    // Find the venue by venueId
+    const venue = await Venue.findOne({ venueId });
+
+    if (!venue) {
+      return res.status(400).json({ message: "Menu not found related to this venue" });
+    }
+
+    const menuObjectId = new mongoose.Types.ObjectId(menuId);
+
+    // Find all menus for the given venueId
+    const menu = await Menu.findOne({ venueId: venue._id, _id: menuObjectId });
+    if (!menu) {
+      return res.status(404).json({ message: "No menu found for this venue menu" });
+    }
+
+    return res.status(200).json({ data: menu || {} });
+  } catch (error) {
+    console.error("Error fetching menus:", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+
+
+
+// get all menu items with sections and children for qr side
+const getMenuItemsWithSectionsForQr = async (req, res) => {
+  const { menuId } = req.params;
+
+  if (!menuId) {
+    return res.status(400).json({ error: "menuId is required" });
+  }
+
+  try {
+    const objectId = new mongoose.Types.ObjectId(menuId);
+
+    // Fetch MenuSections where parentId is null (Top-level sections)
+    const sections = await MenuSection.find({
+      menuId: objectId,
+      parentId: null,
+      // isActive: true,
+    });
+
+    // Fetch MenuItems where parentId is null (Top-level items)
+    const items = await MenuItem.find({
+      menuId: objectId,
+      parentId: null,
+      // isActive: true,
+    });
+
+    // Fetch sub-sections and items for each top-level section
+    const sectionsWithChildren = await Promise.all(
+      sections.map(async (section) => {
+        const sectionItems = await MenuItem.find({
+          menuId: objectId,
+          parentId: section._id,
+          // isActive: true,
+        });
+
+        const subSections = await fetchSubSectionsForQr(section._id, objectId); // Recursively get sub-sections
+
+        return {
+          ...section.toObject(),
+          items: sectionItems,
+          subSections: subSections, // Add nested sub-sections
+        };
+      })
+    );
+
+    // Combine top-level sections, items, and nested sections
+    const combined = [
+      ...sectionsWithChildren,
+      ...items, // Include top-level items
+    ];
+
+    res.status(200).json(combined); // Return the combined data
+  } catch (error) {
+    console.error("Error fetching menus:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Function to fetch sub-sections and sub-items recursively for Qr
+const fetchSubSectionsForQr = async (parentSectionId, menuId) => {
+  // Fetch sub-sections under a section
+  const subSections = await MenuSection.find({
+    menuId: menuId,
+    parentId: parentSectionId,
+    isActive: true,
+  });
+
+  // For each sub-section, fetch the items under that sub-section
+  const subSectionsWithItems = await Promise.all(
+    subSections.map(async (subSection) => {
+      const subItems = await MenuItem.find({
+        menuId: menuId,
+        parentId: subSection._id,
+        // isActive: true,
+      });
+
+      // Recursively fetch sub-sections for this sub-section
+      const nestedSubSections = await fetchSubSectionsForQr(subSection._id, menuId);
+
+      return {
+        ...subSection.toObject(),
+        items: subItems,
+        subSections: nestedSubSections, // Nested sub-sections
+      };
+    })
+  );
+
+  return subSectionsWithItems;
+};
+
+export {
+  getAllMenues,
+  updateMenu,
+  getMenuItemsWithSections,
+  createMenuWitoutItems,
+  createMenuWithItemsSections,
+  getMenuData,
+  getMenuItemsWithSectionsForQr,
+  
+};
