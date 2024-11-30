@@ -21,6 +21,7 @@ const MenuSectionBox = ({ section }) => {
       {section.subSections.map((data, subIndex) => (
         <MenuSubSection key={subIndex} subsection={data} />
       ))}
+      
     </div>
   );
 };
