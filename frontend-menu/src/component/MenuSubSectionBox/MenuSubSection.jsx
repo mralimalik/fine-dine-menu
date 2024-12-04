@@ -4,7 +4,8 @@ const MenuSubSection = ({ subsection }) => {
   return (
     <div>
       <h3 className="flex py-2 border rounded-md px-4">Subsection</h3>
-      <MenuItemBox/>
+      {/* <MenuItemBox/> */}
+      
       {subsection.subSections.map((data, subIndex) => (
         <MenuSubSection key={subIndex} subsection={data} />
       ))}

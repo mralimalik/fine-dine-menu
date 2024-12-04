@@ -1,6 +1,7 @@
 import React from "react";
 import MenuItemBox from "../MenuItemBox/MenuItemBox.jsx";
 import MenuSubSection from "../MenuSubSectionBox/MenuSubSection.jsx";
+
 const MenuSectionBox = ({ section }) => {
   return (
     <div className="px-3 py-3 border rounded-md my-3">
@@ -14,14 +15,22 @@ const MenuSectionBox = ({ section }) => {
         <h3>{section.sectionName}</h3>
       </div>
 
-      {/* Render item of non parent top level section */}
-      {section.items.map((data, itemIndex) => (
-        <MenuItemBox key={itemIndex} item={data} />
-      ))}
-      {section.subSections.map((data, subIndex) => (
-        <MenuSubSection key={subIndex} subsection={data} />
-      ))}
-      
+      {/* Render item of non-parent top-level section */}
+      {section.items && section.items.length > 0 && (
+        <div>
+          {section.items.map((data, itemIndex) => (
+            <MenuItemBox key={itemIndex} item={data} />
+          ))}
+        </div>
+      )}
+
+      {/* {section.subSections && section.subSections.length > 0 && (
+        <div>
+          {section.subSections.map((data, subIndex) => (
+            <MenuSubSection key={subIndex} subsection={data} />
+          ))}
+        </div>
+      )} */}
     </div>
   );
 };

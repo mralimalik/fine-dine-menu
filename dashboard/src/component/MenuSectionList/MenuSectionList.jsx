@@ -1,57 +1,81 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import MenuItemList from "../MenuItemList/MenuItemList.jsx";
-
+import "./MenuSectionList.css";
+import SwitchButton from "../SwitchButton/SwitchButton.jsx";
+import AddMenuSectionItem from "../AddMenuSectionItem/AddMenuSectionItem.jsx";
+import { MenuContext } from "../../context/MenuContext.jsx";
+import { Menu } from "../../../../backend/src/models/menu.model.js";
 const MenuSectionList = ({ sectionData, subSections, items }) => {
+  const [isExpanded, setIsExpanded] = useState(false); // State for expansion
+
+  const {openEditSectionSheet} = useContext(MenuContext);
+  // Toggle expand/collapse
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   // function to render subsections if there is any
   const renderSections = () => {
-    return (
-      subSections.length > 0 && (
-        <div className="px-5">
-          {subSections.map((subSection) => (
-            <MenuSectionList
-              key={subSection._id}
-              sectionData={subSection}
-              subSections={subSection.subSections}
-              items={subSection.items}
-            />
-          ))}
-        </div>
-      )
-    );
+    if (subSections) {
+      return (
+        subSections.length > 0 && (
+          <div>
+            {subSections.map((subSection) => (
+              <MenuSectionList
+                key={subSection._id}
+                sectionData={subSection}
+                subSections={subSection.subSections}
+                items={subSection.items}
+              />
+            ))}
+          </div>
+        )
+      );
+    }
   };
 
   // function to render subitems in any subsection if there is any
   const renderItems = () => {
-    return (
-      items.length > 0 && (
-        <div className="px-5">
-          {items.map((item) => (
-            <MenuItemList key={item._id} menuItemData={item} />
-          ))}
-        </div>
-      )
-    );
+    if (items) {
+      return (
+        items.length > 0 && (
+          <div>
+            {items.map((item) => (
+              <MenuItemList key={item._id} menuItemData={item} />
+            ))}
+          </div>
+        )
+      );
+    }
   };
+
   return (
     <div>
       <div
-        className="menu-section-list bg-white rounded-md p-3 mx-8 my-4"
+        className="menu-section-list bg-white  rounded-md p-3 mx-8 my-4 flex justify-between"
         draggable
+        onClick={()=>{
+          toggleExpand(),
+          openEditSectionSheet(sectionData);
+        }}
       >
-        <div className="menu-section-left">
+        <div className="menu-section-left flex gap-2">
+          <div className="menu-drag-handle-nograb">---</div>
           <p>{sectionData.sectionName}</p>
         </div>
-        <div className="menu-section-right">
-          <p>{sectionData.isActive ? "Active" : "Inactive"}</p>
+        <div className="menu-section-right flex gap-5">
+          <SwitchButton isActive={sectionData.isActive} />
+          <button className="expand-btn">{isExpanded ? "▲" : "▼"}</button>
         </div>
       </div>
-
-      {/* Render Items in Section */}
-      {renderItems()}
-
-      {/* Render Sub-Sections recursively */}
-      {renderSections()}
+      {/* Expandable Content */}
+      {isExpanded && (
+        <div className="pl-10">
+          {renderItems()}
+          {renderSections()}
+          <AddMenuSectionItem parentId={sectionData._id} />
+        </div>
+      )}
     </div>
   );
 };

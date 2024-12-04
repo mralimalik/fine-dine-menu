@@ -1,4 +1,21 @@
 import mongoose from "mongoose";
+
+const itemPriceSchema = mongoose.Schema({
+  name: {
+    type: String,
+    trim: true,
+    default:''
+  },
+  price:{
+    type:Number,
+
+  },
+  calories:{
+    type:Number,
+    default:100
+  }
+});
+
 const menuItemSchema = new mongoose.Schema(
   {
     itemName: {
@@ -8,6 +25,7 @@ const menuItemSchema = new mongoose.Schema(
     },
     position: {
       type: Number,
+      default: 1,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -27,7 +45,7 @@ const menuItemSchema = new mongoose.Schema(
     parentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "MenuSection",
-      default: null
+      default: null,
     },
     isActive: {
       type: Boolean,
@@ -36,11 +54,15 @@ const menuItemSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: ["ITEM"],
-      required: true,
+      default: "ITEM",
     },
-    price:{
-        type:Number,
+    price: {
+      type: [itemPriceSchema],
     },
+    image:{
+      type:String,
+      default:''
+    }
   },
   { timestamps: true }
 );

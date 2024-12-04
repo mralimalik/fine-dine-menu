@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { MenuSection } from "../models/menu.section.js";
 import { MenuItem } from "../models/menu.item.js";
 import { Venue } from "../models/venue.model.js";
+import { uploadOnCloudinary } from "../cloudinaryconfig.js";
 // // to get all menues of particular venue
 // const getAllMenues = async (req, res) => {
 //   // Access venueId from URL params correctly
@@ -42,7 +43,9 @@ const getAllMenues = async (req, res) => {
     // Fetch the number of sections and items for each menu
     const menusWithCounts = await Promise.all(
       menus.map(async (menu) => {
-        const sectionCount = await MenuSection.countDocuments({ menuId: menu._id });
+        const sectionCount = await MenuSection.countDocuments({
+          menuId: menu._id,
+        });
         const itemCount = await MenuItem.countDocuments({ menuId: menu._id });
 
         // Convert menu to a plain object and add section and item counts
@@ -72,7 +75,9 @@ const updateMenu = async (req, res) => {
   }
 
   if (!menuName && !isActive) {
-    return res.status(400).json({ message: "menuName or isActive is required" });
+    return res
+      .status(400)
+      .json({ message: "menuName or isActive is required" });
   }
 
   try {
@@ -80,7 +85,11 @@ const updateMenu = async (req, res) => {
     if (menuName) updateData.menuName = menuName;
     if (isActive) updateData.isActive = isActive;
     // find the menu id and replace with new data
-    const updatedMenu = await Menu.findOneAndUpdate({ _id: menuId }, { $set: updateData }, { new: true });
+    const updatedMenu = await Menu.findOneAndUpdate(
+      { _id: menuId },
+      { $set: updateData },
+      { new: true }
+    );
 
     if (!updatedMenu) {
       return res.status(404).json({ message: "Menu not found" });
@@ -239,7 +248,8 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
-        position:1
+        position: 1,
+        image: "",
       },
       {
         sectionName: "Salads",
@@ -249,7 +259,8 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
-        position:2
+        position: 2,
+        image: "",
       },
       {
         sectionName: "Desserts",
@@ -259,7 +270,8 @@ const createMenuWithItemsSections = async (req, res) => {
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
-        position:3
+        position: 3,
+        image: "",
       },
     ];
 
@@ -271,23 +283,39 @@ const createMenuWithItemsSections = async (req, res) => {
         isActive: false,
         itemName: "Butternut Squash Soup",
         type: "ITEM",
-        price: 20,
+        image: "",
+
+        price: [
+          {
+            name: "",
+            price: 20,
+            calories: 100,
+          },
+        ],
         parentId: savedSections[0]._id,
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
-        position:1
+        position: 1,
       },
       {
         isActive: false,
         itemName: "Gazpacho",
         type: "ITEM",
-        price: 20,
+        image: "",
+
+        price: [
+          {
+            name: "",
+            price: 20,
+            calories: 100,
+          },
+        ],
         parentId: savedSections[0]._id,
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
-        position:2
+        position: 2,
       },
     ];
     const section2Items = [
@@ -295,23 +323,38 @@ const createMenuWithItemsSections = async (req, res) => {
         isActive: false,
         itemName: "Chef's Special Salad ",
         type: "ITEM",
-        price: 20,
+        image: "",
+        price: [
+          {
+            name: "",
+            price: 20,
+            calories: 100,
+          },
+        ],
         parentId: savedSections[1]._id,
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
-        position:1
+        position: 1,
       },
       {
         isActive: false,
         itemName: "Crunchy Spinach Salad",
         type: "ITEM",
-        price: 20,
+        image: "",
+
+        price: [
+          {
+            name: "",
+            price: 20,
+            calories: 100,
+          },
+        ],
         parentId: savedSections[1]._id,
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
-        position:2
+        position: 2,
       },
     ];
     const section3Items = [
@@ -319,38 +362,217 @@ const createMenuWithItemsSections = async (req, res) => {
         isActive: false,
         itemName: "Lemon Cheesecake",
         type: "ITEM",
-        price: 20,
+        image: "",
+
+        price: [
+          {
+            name: "",
+            price: 20,
+            calories: 100,
+          },
+        ],
         parentId: savedSections[2]._id,
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
-        position:1,
+        position: 1,
       },
       {
         isActive: false,
         itemName: "Cinnamon Cheesecake",
         type: "ITEM",
-        price: 20,
+        image: "",
+
+        price: [
+          {
+            name: "",
+            price: 20,
+            calories: 100,
+          },
+        ],
         parentId: savedSections[2]._id,
         menuId: newMenu._id,
         userId: userId,
         venueId: venue._id,
-        position:2
+        position: 2,
       },
     ];
 
     // Save the menu items
-    await MenuItem.insertMany([...section1Items, ...section2Items, ...section3Items]);
+    await MenuItem.insertMany([
+      ...section1Items,
+      ...section2Items,
+      ...section3Items,
+    ]);
 
     // Step 4: Respond with the created menu, sections, and items
     const response = newMenu.toObject();
     response.sections = savedSections.length;
-    response.items = section1Items.length + section2Items.length + section3Items.length;
+    response.items =
+      section1Items.length + section2Items.length + section3Items.length;
 
     res.status(200).json({ data: response });
   } catch (e) {
     console.log("Error creating menu", e);
     res.status(500).json({ message: "Something went wrong", e });
+  }
+};
+
+// to add new section in menu
+const addMenuSection = async (req, res) => {
+  try {
+    const userId = req.user?._id;
+    const itemImage = req.file;
+
+    const { sectionName, venueId, parentId } = req.body;
+    const { menuId } = req.params;
+    if (!menuId) {
+      return res.status(400).json({ message: "menuId is required" });
+    }
+    if (!sectionName) {
+      return res.status(400).json({ message: "sectionName is required" });
+    }
+    if (!venueId) {
+      return res.status(400).json({ message: "veneu _id is required" });
+    }
+    // Upload image to Cloudinary if present
+    const uploadedImage = itemImage
+      ? await uploadOnCloudinary(itemImage.path)
+      : null;
+    const imageUrl = uploadedImage ? uploadedImage.url : null;
+
+    //  // Build the section item query
+    //  const sectionQuery = {
+    //   menuId: menuId,
+    //   $or: [
+    //     { parentId: parentId || null },
+    //     { parentId: { $eq: parentId } },
+    //   ],
+    // };
+
+    // // Fetch sections and items from database
+    // const sections = await MenuSection.find(sectionQuery).sort({ position: -1 });
+    // const items = await MenuItem.find(sectionQuery).sort({ position: -1 });
+
+    //  // Determine the highest position from both sections and items
+    //  const highestSectionPosition = sections.length > 0 ? sections[0].position : 0;
+    //  const highestItemPosition = items.length > 0 ? items[0].position : 0;
+
+    //  const highestPosition = Math.max(highestSectionPosition, highestItemPosition);
+
+    //  // Assign a new position (highest + 1)
+    //  const newPosition = highestPosition + 1;
+
+    const newSection = new MenuSection({
+      venueId: venueId,
+      sectionName: sectionName,
+      parentId: parentId,
+      menuId: menuId,
+      userId: userId,
+      image: imageUrl,
+      // position: newPosition,
+    });
+    // Save the new section
+    await newSection.save();
+
+    return res.status(200).json({ data: newSection });
+  } catch (error) {
+    console.error("Error adding menu section:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// to update sepecific menue section
+const updateMenuSection = async (req, res) => {
+
+  const { sectionName, isActive, parentId } = req.body;
+  const { sectionId } = req.params;
+  const itemImage = req.file;
+
+  if (!sectionId) {
+    return res.status(400).json({ message: "sectionId is required" });
+  }
+
+  try {
+    const updateData = {};
+
+    if (sectionName) updateData.sectionName = sectionName;
+    if (isActive) updateData.isActive = isActive;
+    if (parentId) updateData.parentId = parentId;
+
+    let imageUrl;
+    if (itemImage) {
+      // Upload image to Cloudinary if present
+      imageUrl = await uploadOnCloudinary(itemImage.path);
+    }
+
+    if (imageUrl) updateData.image = imageUrl.url;
+
+    // find the menu id and replace with new data
+    const updatedSection = await MenuSection.findOneAndUpdate(
+      { _id: sectionId },
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!updatedSection) {
+      return res.status(404).json({ message: "Section not found" });
+    }
+
+    return res.status(200).json({ data: updatedSection });
+  } catch (error) {
+    console.error("Error updating section:", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+// to add new item in menu
+const addMenuItem = async (req, res) => {
+  try {
+    const userId = req.user?._id;
+
+    const { itemName, venueId, parentId, price } = req.body;
+    const { menuId } = req.params;
+
+    const itemImage = req.file;
+
+    console.log(itemImage);
+
+    if (!menuId) {
+      return res.status(400).json({ message: "menuId is required" });
+    }
+    if (!itemName) {
+      return res.status(400).json({ message: "itemName is required" });
+    }
+    if (!venueId) {
+      return res.status(400).json({ message: "veneu _id is required" });
+    }
+    if (!price || !Array.isArray(price) || price.length === 0) {
+      return res.status(400).json({ message: "Price should be a non-empty" });
+    }
+
+    // Upload image to Cloudinary if present
+    const uploadedImage = itemImage
+      ? await uploadOnCloudinary(itemImage.path)
+      : null;
+    const imageUrl = uploadedImage ? uploadedImage.url : null;
+
+    const newItem = new MenuItem({
+      venueId: venueId,
+      itemName: itemName,
+      parentId: parentId,
+      menuId: menuId,
+      userId: userId,
+      price: price,
+      image: imageUrl,
+    });
+    // Save the new section
+    await newItem.save();
+
+    return res.status(200).json({ data: newItem });
+  } catch (error) {
+    console.error("Error adding menu item:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -369,7 +591,9 @@ const getMenuData = async (req, res) => {
     const venue = await Venue.findOne({ venueId });
 
     if (!venue) {
-      return res.status(400).json({ message: "Menu not found related to this venue" });
+      return res
+        .status(400)
+        .json({ message: "Menu not found related to this venue" });
     }
 
     const menuObjectId = new mongoose.Types.ObjectId(menuId);
@@ -377,7 +601,9 @@ const getMenuData = async (req, res) => {
     // Find all menus for the given venueId
     const menu = await Menu.findOne({ venueId: venue._id, _id: menuObjectId });
     if (!menu) {
-      return res.status(404).json({ message: "No menu found for this venue menu" });
+      return res
+        .status(404)
+        .json({ message: "No menu found for this venue menu" });
     }
 
     return res.status(200).json({ data: menu || {} });
@@ -386,9 +612,6 @@ const getMenuData = async (req, res) => {
     return res.status(500).json({ message: "Server error", error });
   }
 };
-
-
-
 
 // get all menu items with sections and children for qr side
 const getMenuItemsWithSectionsForQr = async (req, res) => {
@@ -466,7 +689,10 @@ const fetchSubSectionsForQr = async (parentSectionId, menuId) => {
       });
 
       // Recursively fetch sub-sections for this sub-section
-      const nestedSubSections = await fetchSubSectionsForQr(subSection._id, menuId);
+      const nestedSubSections = await fetchSubSectionsForQr(
+        subSection._id,
+        menuId
+      );
 
       return {
         ...subSection.toObject(),
@@ -487,5 +713,7 @@ export {
   createMenuWithItemsSections,
   getMenuData,
   getMenuItemsWithSectionsForQr,
-  
+  addMenuSection,
+  addMenuItem,
+  updateMenuSection
 };

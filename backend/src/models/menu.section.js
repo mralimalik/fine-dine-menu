@@ -8,6 +8,7 @@ const menuSectionSchema = new mongoose.Schema(
     },
     position: {
       type: Number,
+      default:1
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -31,13 +32,17 @@ const menuSectionSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     type: {
       type: String,
       enum: ["SECTION"],
-      required: true,
+      default: "SECTION", 
     },
+    image:{
+      type:String,
+      default:''
+    }
   },
   { timestamps: true }
 );
