@@ -10,6 +10,9 @@ import { AuthContextProvider } from "./context/AuthContext.jsx";
 import { MenuContextProvider } from "./context/MenuContext.jsx";
 import { TableContextProvider } from "./context/TablesContext.jsx";
 import OperationMain from "./pages/Settings/Operations/OperationMain.jsx";
+import { ModifierContextProvider } from "./context/ModifierContext.jsx";
+import AllOrders from "./pages/Orders/AllOrders/AllOrders.jsx";
+import OrderSettings from "./pages/Orders/OrderSettings/OrderSettings.jsx";
 function App() {
   return (
     <BrowserRouter>
@@ -17,6 +20,7 @@ function App() {
         <SidebarContextProvider>
           <VenueContextProvider>
             <MenuContextProvider>
+              <ModifierContextProvider>
               <TableContextProvider>
                 <Routes>
                   {/* Default Route */}
@@ -32,13 +36,17 @@ function App() {
                     <Route path="menu-management/:menuId" element={<MenuEditor />} />
 
                     <Route path="operations" element={<OperationMain />}/>
-
+                    <Route path="orders/all-orders" element={<AllOrders />} />
+                    <Route path="orders/order-settings" element={<OrderSettings />} />
                   </Route>
 
+
                   {/* Catch-all Route */}
-                  {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
+                  <Route path="*" element={<Navigate to="/login" replace />} />
                 </Routes>
               </TableContextProvider>
+              </ModifierContextProvider>
+            
             </MenuContextProvider>
           </VenueContextProvider>
         </SidebarContextProvider>

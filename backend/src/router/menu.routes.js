@@ -30,6 +30,7 @@ menuRouter.post("/sampleMenu/:venueId", authenticateToken, createMenuWithItemsSe
 // to add menu section in specific menu  or update menu item or menu sections
 menuRouter.post("/menusection/:menuId", authenticateToken,upload.single('itemImage'), addMenuSection);
 menuRouter.post("/menuitem/:menuId", authenticateToken,upload.single('itemImage'),addMenuItem);
+
 menuRouter.put("/menusection/:sectionId", authenticateToken,upload.single('itemImage'),updateMenuSection);
 
 

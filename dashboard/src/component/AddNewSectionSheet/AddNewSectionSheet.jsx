@@ -257,8 +257,6 @@ const AddNewSectionSheet = ({}) => {
     }
   };
 
-  
-
   // Initialize form data if editSectionData exists
   useEffect(() => {
     if (editSectionData) {
@@ -356,7 +354,7 @@ const AddNewSectionSheet = ({}) => {
         </div>
 
         <div className="form-group">
-          <label className="form-label">Assign Tables (optional)</label>
+          <label className="form-label">Assign Section (optional)</label>
           <Select
             value={
               dropdownOption.find(

@@ -484,7 +484,6 @@ const addMenuSection = async (req, res) => {
 
 // to update sepecific menue section
 const updateMenuSection = async (req, res) => {
-
   const { sectionName, isActive, parentId } = req.body;
   const { sectionId } = req.params;
   const itemImage = req.file;
@@ -531,9 +530,13 @@ const addMenuItem = async (req, res) => {
   try {
     const userId = req.user?._id;
 
-    const { itemName, venueId, parentId, price } = req.body;
+    const { itemName, venueId, parentId, price, description,modifiers,lables,isSold } = req.body;
     const { menuId } = req.params;
 
+    const parsedPrice = typeof price === "string" ? JSON.parse(price) : price;
+    const parsedModifiers = typeof price === "string" ? JSON.parse(modifiers) : modifiers;
+
+  
     const itemImage = req.file;
 
     console.log(itemImage);
@@ -547,8 +550,11 @@ const addMenuItem = async (req, res) => {
     if (!venueId) {
       return res.status(400).json({ message: "veneu _id is required" });
     }
-    if (!price || !Array.isArray(price) || price.length === 0) {
-      return res.status(400).json({ message: "Price should be a non-empty" });
+
+    if (!parsedPrice ||!Array.isArray(parsedPrice) || parsedPrice.length === 0 ) {
+      return res
+        .status(400)
+        .json({ message: "Price should be a non-empty array." });
     }
 
     // Upload image to Cloudinary if present
@@ -563,8 +569,12 @@ const addMenuItem = async (req, res) => {
       parentId: parentId,
       menuId: menuId,
       userId: userId,
-      price: price,
+      price: parsedPrice, 
       image: imageUrl,
+      description,
+      modifiers:parsedModifiers,
+      // lables,
+      isSold
     });
     // Save the new section
     await newItem.save();
@@ -715,5 +725,5 @@ export {
   getMenuItemsWithSectionsForQr,
   addMenuSection,
   addMenuItem,
-  updateMenuSection
+  updateMenuSection,
 };

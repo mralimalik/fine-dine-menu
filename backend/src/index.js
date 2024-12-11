@@ -7,7 +7,8 @@ import userRouter from "./router/user.routes.js";
 import menuRouter from "./router/menu.routes.js";
 import venueRouter from "./router/venue.routes.js";
 import tableRouter from "./router/table.routes.js";
-
+import modifierRouter from "./router/modifier.routes.js";
+import orderRouter from "./router/order.routes.js";
 
 dotenv.config();
 
@@ -21,6 +22,10 @@ app.use("/user", userRouter);
 app.use("/menu", menuRouter);
 app.use("/venue", venueRouter);
 app.use("/table", tableRouter);
+app.use("/modifier", modifierRouter);
+app.use("/order", orderRouter);
+
+
 
 
 

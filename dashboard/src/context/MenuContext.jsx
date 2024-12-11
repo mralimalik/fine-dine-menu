@@ -5,6 +5,9 @@ import axios from "axios";
 export const MenuContext = createContext();
 
 export const MenuContextProvider = ({ children }) => {
+  // show add new section or item sheet
+  const [showSectionItemSheet, setShowSectionItemSheet] = useState(null);
+
   // all menu data
   const [menuItems, setMenuItems] = useState([]);
   // all menu items and section data
@@ -13,29 +16,11 @@ export const MenuContextProvider = ({ children }) => {
   //hold data to edit of that section on which i tap
   const [editSectionData, setEditSectionData] = useState(null);
 
-  // show add new section sheet
-  const [showSectionSheet, setShowSectionSheet] = useState(false);
-
   //select parent section id
   const [sectionParentId, setSectionParentId] = useState(null);
 
-  // to add new sheet
-  const toggleSectionSheet = (sectionId) => {
-    setEditSectionData(null);
-    setSectionParentId(sectionId);
-    setShowSectionSheet(true);
-  };
-  const closeSectionSheet = () => {
-    setShowSectionSheet(false);
-  };
-
-  // Open the sheet to edit the section
-  const openEditSectionSheet = (sectionData) => {
-    setEditSectionData(null);
-    setEditSectionData(sectionData);
-    setSectionParentId(sectionData.parentId);
-    setShowSectionSheet(true);
-  };
+  //hold data to edit of that item on which i tap
+  const [editItemData, setEditItemData] = useState(null);
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
@@ -72,9 +57,9 @@ export const MenuContextProvider = ({ children }) => {
     const apiUrl = `http://localhost:3000/menu/menusection/${sectionId}`;
     const token = localStorage.getItem("Token");
     try {
-      const body={
-        isActive:isActive
-      }
+      const body = {
+        isActive: isActive,
+      };
       // Send the PUT request
       const response = await axios.put(apiUrl, body, {
         headers: {
@@ -92,6 +77,158 @@ export const MenuContextProvider = ({ children }) => {
     }
   };
 
+  // to add new sheet
+  const toggleSectionSheet = (sectionId) => {
+    setEditSectionData(null);
+    setSectionParentId(sectionId);
+    setShowSectionItemSheet("SECTION");
+  };
+
+  const closeSectionSheet = () => {
+    setShowSectionItemSheet(null);
+    setEditItemData(null);
+    setEditSectionData(null);
+    clearItemFields();
+  };
+
+  // Open the sheet to edit the section
+  const openEditSectionSheet = (sectionData) => {
+    setEditSectionData(null);
+    setEditSectionData(sectionData);
+    setSectionParentId(sectionData.parentId);
+    setShowSectionItemSheet("SECTION");
+  };
+
+  // for add or updaitng menu items;
+  const [itemName, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [itemImage, setItemImage] = useState(null);
+  // set price for items
+  const [price, setPriceCalorie] = useState([
+    {
+      name: "",
+      price: 0,
+      calories: 0,
+    },
+  ]);
+  const [isSoldOut, setIsSoldOut] = useState(false);
+
+  // set modifiers for item
+  const [modifiers, setModifiers] = useState([]);
+
+  const clearItemFields = () => {
+    setName("");
+    setDescription("");
+    setItemImage("");
+    setName("");
+    setPriceCalorie([
+      {
+        name: "",
+        price: 0,
+        calories: 0,
+      },
+    ]);
+
+    setModifiers([]);
+    setIsSoldOut(false);
+  };
+
+  const createItem = async (menuId, selectedVenue) => {
+    const apiUrl = `http://localhost:3000/menu/menuitem/${menuId}`;
+    const venueId = selectedVenue._id;
+    const token = localStorage.getItem("Token");
+    console.log(price);
+
+    try {
+      // Create FormData object
+      const data = new FormData();
+      data.append("itemName", itemName);
+      data.append("venueId", venueId);
+      data.append("itemImage", itemImage);
+      data.append("price", JSON.stringify(price));
+      data.append("isSold",isSoldOut);
+      if (sectionParentId) data.append("parentId", sectionParentId);
+      if (description) data.append("description", description);
+      if (modifiers) data.append("modifiers", JSON.stringify(modifiers));
+
+
+      // Send the POST request
+      const response = await axios.post(apiUrl, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        console.log("API Response:", response.data.data);
+        updateMenuItems(response.data.data);
+        alert("Item added successfully");
+        clearItemFields();
+        closeSectionSheet();
+      }
+    } catch (error) {
+      console.error("Error creating item:", error.response || error.message);
+    } finally {
+    }
+  };
+
+  const updateMenuItems = (newItem) => {
+    setMenuSectionsData((prevMenuData) => {
+      const updatedMenuData = [...prevMenuData];
+
+      if (!newItem.parentId) {
+        console.error("Items must have a valid parentId!");
+        updatedMenuData.push(newItem);
+      } else {
+        addItemToSection(updatedMenuData, newItem);
+      }
+
+      return updatedMenuData;
+    });
+  };
+
+  const addItemToSection = (sections, newItem) => {
+    for (let section of sections) {
+      if (section._id === newItem.parentId) {
+        if (!section.items) {
+          section.items = [];
+        }
+        section.items.push(newItem);
+        return true;
+      }
+      if (section.subSections && section.subSections.length > 0) {
+        if (addItemToSection(section.subSections, newItem)) {
+          return true;
+        }
+      }
+    }
+    console.error("Parent section not found for item!");
+    return false;
+  };
+  // for edit item
+  const assignItemDataToVariables = (itemData) => {
+    setName(itemData.itemName);
+    setDescription(itemData.description);
+    setItemImage(itemData.image);
+    setPriceCalorie(itemData.price);
+    setModifiers(itemData.modifiers);
+    setIsSoldOut(itemData.isSold);
+  };
+  // to add new sheet
+  const toggleNewItemSheet = (sectionId) => {
+    setEditItemData(null);
+    setSectionParentId(sectionId);
+    setShowSectionItemSheet("ITEM");
+  };
+  // to open edit item sheet
+  const toggleEditItemSheet = (sectionData) => {
+    setEditItemData(null);
+    setEditItemData(sectionData);
+    setSectionParentId(sectionData.parentId);
+    setShowSectionItemSheet("ITEM");
+  };
+
   return (
     <MenuContext.Provider
       value={{
@@ -101,13 +238,31 @@ export const MenuContextProvider = ({ children }) => {
         menuData,
         setMenuSectionsData,
         getMenuesItemsandSections,
-        showSectionSheet,
+        showSectionItemSheet,
         toggleSectionSheet,
         sectionParentId,
         closeSectionSheet,
         setSectionParentId,
         openEditSectionSheet,
         editSectionData,
+        price,
+        setPriceCalorie,
+        editItemData,
+        setEditItemData,
+        toggleNewItemSheet,
+        itemName,
+        setName,
+        description,
+        setDescription,
+        itemImage,
+        setItemImage,
+        createItem,
+        toggleEditItemSheet,
+        clearItemFields,
+        assignItemDataToVariables,
+        modifiers,
+        setModifiers,
+        setShowSectionItemSheet,
       }}
     >
       {children}

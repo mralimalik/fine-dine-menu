@@ -1,8 +1,13 @@
 import { Router } from "express";
 import authenticateToken from "../middleware/auth_token.js";
-import { createCustomTables,createAutomaticTables,createArea,getAllAreaWithTables,updateTable,deleteTables } from "../controllers/table.controller.js";
+import { createCustomTables,createAutomaticTables,createArea,getAllAreaWithTables,updateTable,deleteTables,getTable } from "../controllers/table.controller.js";
 
 const tableRouter = Router();
+
+
+
+tableRouter.get("/:venueId/table/:tableId", getTable);
+
 
 tableRouter.post("/createArea", authenticateToken, createArea);
 tableRouter.post("/createCustomTable", authenticateToken, createCustomTables);

@@ -20,7 +20,7 @@ const VenueSwitchPopUp = () => {
   return (
     <div
       ref={venueSwitchRef}
-      className={`venue-pop-up ${showVeneueSwitchPopUp === true ? "venue-pop-up-open" : ""}`}
+      className={`venue-pop-up ${showVeneueSwitchPopUp === true ? "venue-pop-up-open" : ""} overflow-y-auto`}
     >
       <input
         className="w-full p-1 border outline-none rounded-[10px] my-2 "

@@ -45,6 +45,9 @@ export const MenuContextProvider = ({ children }) => {
       console.log("Error getting menu with no item:", err);
     }
   };
+
+
+
   return (
     <MenuContext.Provider value={{ menuItemsData, setMenuItemsData, getMenuesItemsandSections }}>
       {children}

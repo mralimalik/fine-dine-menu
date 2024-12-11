@@ -3,10 +3,9 @@ import { MenuContext } from "../../context/MenuContext";
 import { Menu } from "../../../../backend/src/models/menu.model";
 const AddMenuSectionItem = ({ parentId }) => {
   const [isAddDropDownVisible, setAddDropDownVisible] = useState(false);
-  const dropdownRef = useRef(null); 
+  const dropdownRef = useRef(null);
 
-  const { toggleSectionSheet } = useContext(MenuContext);
-
+  const { toggleSectionSheet, toggleNewItemSheet } = useContext(MenuContext);
 
   // Toggle the dropdown
   const toggleAddDropdown = () => {
@@ -41,11 +40,18 @@ const AddMenuSectionItem = ({ parentId }) => {
         <div className="dropdown-menu bg-white shadow-md rounded-md p-2 absolute ml-8">
           <div
             className="dropdown-item py-1 px-2 cursor-pointer hover:bg-gray-200"
-            onClick={()=>{toggleSectionSheet(parentId)}}
+            onClick={() => {
+              toggleSectionSheet(parentId);
+            }}
           >
             Section
           </div>
-          <div className="dropdown-item py-1 px-2 cursor-pointer hover:bg-gray-200">
+          <div
+            className="dropdown-item py-1 px-2 cursor-pointer hover:bg-gray-200"
+            onClick={() => {
+              toggleNewItemSheet(parentId);
+            }}
+          >
             Item
           </div>
         </div>

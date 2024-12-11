@@ -1,20 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import SwitchButton from "../SwitchButton/SwitchButton.jsx";
-
+import { MenuContext } from "../../context/MenuContext.jsx";
 const MenuItemList = ({ menuItemData }) => {
+  const { toggleEditItemSheet } = useContext(MenuContext);
   const [price, setPrice] = useState(menuItemData.price);
-
+  // Manage isActive state
+  const [isActive, setIsActive] = useState(menuItemData.isActive);
   const handlePriceChange = (event) => {
     const value = event.target.value;
     if (!isNaN(value) && value >= 0) {
       setPrice(value);
     }
   };
+  // Handle toggle for SwitchButton
+  const handleToggle = () => {
+    setIsActive((prevIsActive) => !prevIsActive); // Toggle isActive state
+  };
 
   return (
     <div
       className="menu-item-list bg-white rounded-md p-3 mx-8 my-4 flex justify-between items-center"
       draggable
+      onClick={() => {
+        toggleEditItemSheet(menuItemData);
+      }}
     >
       {/* Left Section */}
       <div className="menu-item-left flex items-center gap-3">
@@ -35,9 +44,10 @@ const MenuItemList = ({ menuItemData }) => {
             className="w-16 text-center outline-none"
           />
         </div>
-
         {/* Switch Button */}
-        <SwitchButton isActive={menuItemData.isActive} />
+        <div onClick={(event) => event.stopPropagation()}>
+          <SwitchButton isActive={isActive} onToggle={handleToggle} />
+        </div>
       </div>
     </div>
   );

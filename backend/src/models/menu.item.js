@@ -4,16 +4,15 @@ const itemPriceSchema = mongoose.Schema({
   name: {
     type: String,
     trim: true,
-    default:''
+    default: "",
   },
-  price:{
-    type:Number,
-
+  price: {
+    type: Number,
   },
-  calories:{
-    type:Number,
-    default:100
-  }
+  calories: {
+    type: Number,
+    default: 100,
+  },
 });
 
 const menuItemSchema = new mongoose.Schema(
@@ -59,10 +58,45 @@ const menuItemSchema = new mongoose.Schema(
     price: {
       type: [itemPriceSchema],
     },
-    image:{
-      type:String,
-      default:''
-    }
+    image: {
+      type: String,
+      default: "",
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+    isSold: {
+      type: Boolean,
+      default: false,
+    },
+    labels:[
+      {
+        type:String,
+        default:''
+      }
+    ],
+    modifiers: [
+      {
+        modifierId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "ModifierGroup", 
+          required: true,
+        },
+        min: {
+          type: Number,
+          default: 0,
+        },
+        max: {
+          type: Number,
+          default: 1,
+        },
+        required: {
+          type: Boolean,
+          default: false,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

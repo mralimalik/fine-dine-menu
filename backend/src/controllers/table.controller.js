@@ -272,4 +272,28 @@ const deleteTables = async (req, res) => {
  }
 };
 
-export { createArea, createAutomaticTables, createCustomTables, getAllAreaWithTables, updateTable,deleteTables };
+
+//fetch specific table
+const getTable = async (req, res) => {
+  try {
+    const { venueId, tableId} = req.params;
+
+    if (!venueId) {
+      return res.status(400).json({ error: "venueId is required" });
+    }
+    if (!tableId) {
+      return res.status(400).json({ error: "tableId is required" });
+    }  
+    const table = await AreaTable.findById(tableId);
+
+
+    res.status(200).json({ data: table });
+  } catch (e) {
+    console.error("Error getting table ", e);
+    res.status(500).json({ message: "Something went wrong", error: e.message });
+  }
+};
+
+
+
+export { createArea, createAutomaticTables, createCustomTables, getAllAreaWithTables, updateTable,deleteTables,getTable };

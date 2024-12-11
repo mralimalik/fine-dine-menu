@@ -7,23 +7,29 @@ import { MenuContext } from "../../context/MenuContext.jsx";
 import { useParams } from "react-router-dom";
 import MenuSectionBox from "../../component/MenuSectionBox/MenuSectionBox.jsx";
 const MenuHome = () => {
-  const { venueData, menus, setSelectedMenu, selectedMenu } = useContext(VenueContext);
+  const { venueData, menus, setSelectedMenu, selectedMenu,tableData ,getSelectedMenuData} = useContext(VenueContext);
   const { getMenuesItemsandSections, setMenuItemsData, menuItemsData } = useContext(MenuContext);
-  const { menuId } = useParams();
+  const { venueId,menuId } = useParams();
 
   const menu = ["Starter", "Salad", "Starter", "Salad", "Starter", "Salad", "Starter", "Salad"];
   useEffect(() => {
     console.log(menuId);
-
+    getSelectedMenuData(venueId,menuId);
     getMenuesItemsandSections(menuId);
-  }, [menuId]);
+
+  }, []);
 
   return (
+    <div>
     <div>
       <div className="bg-red-500  p-3 text-xl text-white font-semibold flex justify-center  ">
         <h4>{venueData ? venueData.venueName : ""} Menu</h4>
       </div>
-
+      {tableData && (
+        <div className="flex justify-center py-4 font-medium border-b">
+          {tableData.tableName}
+        </div>
+      )}
       <div className="mt-10 px-3">
         <h3 className="font-semibold text-2xl flex justify-center">
           {selectedMenu ? selectedMenu.menuName : ""}
@@ -59,6 +65,14 @@ const MenuHome = () => {
           }
         })}
       </div>
+    
+      
+    </div>
+    <div className="p-3 bg-white fixed bottom-0 w-full">
+    <div className="bg-red-500 py-3 text-white flex justify-center items-center font-medium  text-lg">
+        <h4>View Cart</h4>
+      </div>
+    </div>
     </div>
   );
 };

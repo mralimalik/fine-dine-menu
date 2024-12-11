@@ -1,7 +1,9 @@
 import { Venue } from "../models/venue.model.js";
 import { Menu } from "../models/menu.model.js";
+import { OrderSetting } from "../models/order.setting.model.js";
 const createRandomVenueId = () => {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
   for (let i = 0; i <= 7; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
@@ -18,12 +20,19 @@ const createVenue = async (req, res) => {
     }
     const { venueName, country } = req.body;
     if (!venueName || !country) {
-      return res.status(400).json({ message: "venueName and country is required" });
+      return res
+        .status(400)
+        .json({ message: "venueName and country is required" });
     }
 
     //create random short venueId
     const venueId = createRandomVenueId();
     const newVenue = new Venue({ venueName, country, venueId, userId });
+
+    // Create default order settings with venueId
+    const orderSetting = new OrderSetting({ venueId: newVenue._id });
+    await orderSetting.save();
+
     await newVenue.save().then((response) => {
       res.status(200).json({ data: response });
     });
@@ -64,7 +73,9 @@ const updateVenueById = async (req, res) => {
       return res.status(400).json({ message: "venueId is required" });
     }
     if (!venueName && !country) {
-      return res.status(400).json({ message: "Provide venueName or country to update" });
+      return res
+        .status(400)
+        .json({ message: "Provide venueName or country to update" });
     }
 
     const updateData = {};
@@ -78,10 +89,14 @@ const updateVenueById = async (req, res) => {
     );
 
     if (!updatedVenue) {
-      return res.status(404).json({ message: "Venue not found or unauthorized" });
+      return res
+        .status(404)
+        .json({ message: "Venue not found or unauthorized" });
     }
 
-    res.status(200).json({ message: "Venue updated successfully", data: updatedVenue });
+    res
+      .status(200)
+      .json({ message: "Venue updated successfully", data: updatedVenue });
   } catch (e) {
     console.error("Error updating venue", e);
     res.status(500).json({ message: "Something went wrong", e });
@@ -105,7 +120,9 @@ const getVenueById = async (req, res) => {
     const venue = await Venue.findOne({ venueId, userId });
 
     if (!venue) {
-      return res.status(404).json({ message: "Venue not found or unauthorized" });
+      return res
+        .status(404)
+        .json({ message: "Venue not found or unauthorized" });
     }
 
     // Return the venue data
@@ -132,18 +149,23 @@ const getVenueDataForQr = async (req, res) => {
     }
 
     // Find all menus for the given venueId
-    const menus = await Menu.find({ venueId: venue._id ,isActive:true});
+    const menus = await Menu.find({ venueId: venue._id, isActive: true });
     if (!menus) {
       return res.status(404).json({ message: "No menus found for this venue" });
     }
 
     // Return the venue data
     res.status(200).json({ venue, menus: menus || [] });
-
   } catch (e) {
     console.error("Error fetching venue by ID", e);
     res.status(500).json({ message: "Something went wrong", e });
   }
 };
 
-export { createVenue, getAllVenuesByUser, updateVenueById, getVenueById, getVenueDataForQr };
+export {
+  createVenue,
+  getAllVenuesByUser,
+  updateVenueById,
+  getVenueById,
+  getVenueDataForQr,
+};

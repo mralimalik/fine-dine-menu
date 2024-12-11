@@ -1,14 +1,18 @@
-import React from 'react'
-import './SwitchButton.css'
-const SwitchButton = ({isActive}) => {
+import React from "react";
+import "./SwitchButton.css";
+const SwitchButton = ({ isActive, onToggle }) => {
   return (
     <div>
-          <label className="switch">
-            <input type="checkbox" checked={isActive} />
-            <span className="slider"></span>
-          </label>
+      <label className="switch">
+        <input
+          type="checkbox"
+          checked={isActive}
+          onChange={onToggle} 
+        />
+        <span className="slider"></span>
+      </label>
     </div>
-  )
-}
+  );
+};
 
-export default SwitchButton
+export default SwitchButton;

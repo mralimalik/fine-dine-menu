@@ -8,7 +8,6 @@ const CreateMenuForm = ({ isOpen, onClose }) => {
   const { setMenuItems } = useContext(MenuContext);
   const [selectedOption, setSelectedOption] = useState(null);
 
-  if (!isOpen) return null;
 
   const menuOptions = [
     { title: "Start From Scratch", des: "Start with an empty menu" },

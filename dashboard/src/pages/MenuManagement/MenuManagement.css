@@ -24,3 +24,10 @@
     border: none;
     font-size: 14px;
 }
+
+.menutabs{
+    width:fit-content;
+    padding: 0px 8px;
+    height: 45px;
+
+}
