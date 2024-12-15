@@ -3,13 +3,15 @@ import { VenueContext } from "../../context/VenueContext";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 const SelectMenuDialog = ({ menus, onClose }) => {
-  const { venueData, setSelectedMenu } = useContext(VenueContext);
+  const { venueData, setSelectedMenu, } = useContext(VenueContext);
 
   const navigate = useNavigate();
   const handleMenuTap = (menu) => {
     setSelectedMenu(menu);
     if (menu) {
       navigate(`/${venueData.venueId}/menu/${menu._id}`);
+      // localStorage.setItem("menu",menu._id);
+
     } else {
       console.log("No selected menu");
     }

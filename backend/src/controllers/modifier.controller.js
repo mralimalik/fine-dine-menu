@@ -1,5 +1,7 @@
 import { ModifierGroup } from "../models/modifier.model.js";
 import { MenuItem } from "../models/menu.item.js";
+import mongoose from "mongoose";
+
 const createModifier = async (req, res) => {
   try {
     const userId = req.user?._id;
@@ -97,4 +99,133 @@ const deleteModifier = async (req, res) => {
   }
 };
 
-export { createModifier, getModifiersByVenue, deleteModifier };
+
+
+
+// // // specific item modifiers
+// const getItemModifiers = async (req, res) => {
+//   const { itemId } = req.params;
+
+//   if (!itemId) {
+//     return res.status(400).json({ message: "itemId is required" });
+//   }
+
+//   try {
+//     // Validate and get the item
+//     const item = await MenuItem.findById(itemId);
+//     if (!item) {
+//       return res.status(404).json({ message: "Item not found" });
+//     }
+
+//     // Use aggregation to fetch modifiers with active prices
+//     const modifiers = await ModifierGroup.aggregate([
+//       {
+//         $match: {
+//           _id: { $in: item.modifiers.map((mod) => mod.modifierId) },
+//         },
+//       },
+//       {
+//         $project: {
+//           groupName: 1,
+//           venueId: 1,
+//           userId: 1,
+//           isActive: 1,
+//           modifierPrices: {
+//             $filter: {
+//               input: "$modifierPrices",
+//               as: "price",
+//               cond: { $eq: ["$$price.isActive", true] }, // Filter active prices
+//             },
+//           },
+//         },
+//       },
+//     ]);
+
+//     return res.status(200).json({ item,modifiers });
+//   } catch (error) {
+//     console.error("Error fetching modifiers:", error);
+//     return res.status(500).json({ message: "Server error", error });
+//   }
+// };
+
+
+const getItemModifiers = async (req, res) => {
+  const { itemId } = req.params;
+
+  if (!itemId) {
+    return res.status(400).json({ message: "itemId is required" });
+  }
+
+  try {
+    // Validate and get the item
+    const item = await MenuItem.findById(itemId);
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Use aggregation to fetch modifiers with active prices
+    const modifiers = await ModifierGroup.aggregate([
+      {
+        $match: {
+          _id: { $in: item.modifiers.map((mod) => mod.modifierId) },
+        },
+      },
+      {
+        $project: {
+          groupName: 1,
+          isActive: 1,
+          modifierPrices: {
+            $filter: {
+              input: "$modifierPrices",
+              as: "price",
+              cond: { $eq: ["$$price.isActive", true] }, // Filter active prices
+            },
+          },
+        },
+      },
+    ]);
+
+    // Map modifiers back into the item's modifiers field
+    const enrichedModifiers = item.modifiers.map((mod) => {
+      const modifierDetails = modifiers.find(
+        (modifier) => String(modifier._id) === String(mod.modifierId)
+      );
+      return {
+        ...mod._doc, // Include original modifier fields (min, max, required, etc.)
+        ...modifierDetails, // Add modifier group details (groupName, isActive, prices, etc.)
+      };
+    });
+
+    // Return the enriched item with modifiers
+    return res.status(200).json({
+      item: {
+        ...item._doc,
+        modifiers: enrichedModifiers,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching modifiers:", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+
+
+export { createModifier, getModifiersByVenue, deleteModifier,getItemModifiers };
+
+
+// [
+//   {
+//     "modifierId or modifierGroupId":lkdf,
+//     "modifierPriceId or modifierItemId":asdfasdf,
+//     "quantity":
+
+//   },
+
+//   {
+//     "modifierId or modifierGroupId":lkdf,
+//     "modifierPriceId or modifierItemId":asdfasdf,
+//     "quantity":
+    
+//   },
+// ]

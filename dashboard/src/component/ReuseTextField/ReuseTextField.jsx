@@ -15,7 +15,7 @@ const ReuseTextField = ({ label, name, required, placeholder, value, onChange ,c
     <div className="text-field-container">
       <label className="text-field-label">
         {label}
-        {required && <span className="required text-red-400">*</span>}
+        {label && (required && <span className="required text-red-400">*</span>)}
       </label>
       <input
         type="text"

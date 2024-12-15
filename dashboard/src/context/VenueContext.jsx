@@ -9,6 +9,10 @@ export const VenueContextProvider = ({ children, venueId }) => {
   // for storing add venue dialog ref
   const venueModalRef = useRef(null);
 
+// for handling charges of venue sale
+  const [extraCharges, setExtraCharges] = useState([]);
+
+
   const handleModalOpen = () => {
     setIsModalOpen(true);
   };
@@ -30,6 +34,8 @@ export const VenueContextProvider = ({ children, venueId }) => {
         handleModalClose,
         setIsModalOpen,
         venueId,
+        extraCharges,
+        setExtraCharges
       }}
     >
       {children}

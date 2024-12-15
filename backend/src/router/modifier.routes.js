@@ -4,9 +4,13 @@ import {
   createModifier,
   getModifiersByVenue,
   deleteModifier,
+  getItemModifiers
 } from "../controllers/modifier.controller.js";
 
 const modifierRouter = Router();
+
+modifierRouter.get("/:itemId", getItemModifiers);
+
 
 modifierRouter.post("/delete", authenticateToken, deleteModifier);
 

@@ -1,43 +1,63 @@
-import React from "react";
-import "./Home.css";
-import { useEffect, useContext, useState, } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { VenueContext } from "../../context/VenueContext";
 import SelectMenuDialog from "../../component/SelectMenuDialog/SelectMenuDialog.jsx";
+import "./Home.css";
 
 const Home = () => {
-  const { venueData, menus, setSelectedMenu, tableData, orderSettings } =
-    useContext(VenueContext);
+  const {
+    venueData,
+    menus,
+    setSelectedMenu,
+    tableData,
+    orderSettings,
+    orderType,
+    storeOrderTypeInLocal
+  } = useContext(VenueContext);
 
   const [isMenuDialogOpen, setIsMenuDialogOpen] = useState(false);
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log("use effect of home");
+    localStorage.removeItem("orderType");
+    localStorage.removeItem("tableId");
+  }, []);
+
   const handleMenuDialogClose = () => {
     setIsMenuDialogOpen(false);
   };
-  const handleMenu = () => {
+
+  const handleMenuSelection = (orderType) => {
     if (menus.length === 1) {
       setSelectedMenu(menus[0]);
-      if (menus[0]) {
-        navigate(`/${venueData.venueId}/menu/${menus[0]._id}`);
-      } else {
-        console.log("No selected menu");
-      }
+      navigateToMenu(menus[0]);
+      storeOrderTypeInLocal(orderType);
     } else if (menus.length > 1) {
       setIsMenuDialogOpen(true);
+      storeOrderTypeInLocal(orderType);
     }
   };
-  useEffect(() => {
-    console.log("use effect of home");
-    
-   localStorage.removeItem("tableId")
-  }, [])
-  
+
+  const navigateToMenu = (menu) => {
+    if (menu) {
+      navigate(`/${venueData.venueId}/menu/${menu._id}`);
+      // localStorage.setItem("menu",menu._id);
+    } else {
+      console.log("No selected menu");
+    }
+  };
+
+  const shouldShowDeliveryButton =
+    orderSettings?.settings?.delivery?.orderEnabled;
+
+  const shouldShowPickupButton =
+    orderSettings?.settings?.pickup?.orderEnabled;
 
   return (
     <div className="h-screen w-full flex flex-col relative">
-      <div className="bg-red-400 text-white text-base py-2 px-4 flex justify-end">
+      <div className="bg-violet-400 text-white text-base py-2 px-4 flex justify-end">
         <button className="login-button">Login</button>
       </div>
       {tableData && (
@@ -50,18 +70,27 @@ const Home = () => {
           <h1 className="text-3xl font-medium my-4">
             {venueData ? venueData.venueName : ""}
           </h1>
-          <button
-            className="text-md bg-red-600 py-2  text-white w-80 rounded-md"
-            onClick={handleMenu}
-          >
-            {tableData ? "Go to Menu" :
-            orderSettings?
-            orderSettings.settings.delivery.orderEnabled===true?"Delivery":"Go to Menu":"Go to Menu"}
-          </button>
 
-          
+          {orderType === "table" && (
+            <MenuButton handleMenu={()=>handleMenuSelection("table")} />
+          )}
+
+
+          {orderType !== "table" && (
+            <>
+              {/* {shouldShowDeliveryButton && (
+                <MenuButton buttonText="Delivery" handleMenu={()=>handleMenuSelection("delivery")} />
+              )}
+              {shouldShowPickupButton && (
+                <MenuButton buttonText="Pick up" handleMenu={()=>handleMenuSelection("pickup")}/>
+              )} */}
+              {!shouldShowDeliveryButton && !shouldShowPickupButton && (
+                <MenuButton buttonText="Go to Menu" handleMenu={()=>handleMenuSelection(null)} />
+              )}
+            </>
+          )}
         </div>
-        <div className=" border-y-2 py-4 px-2">
+        <div className="border-y-2 py-4 px-2">
           <p>📄 Give Feedback</p>
         </div>
       </div>
@@ -73,3 +102,14 @@ const Home = () => {
 };
 
 export default Home;
+
+export const MenuButton = ({ handleMenu, buttonText = "Go to Menu" }) => {
+  return (
+    <button
+      className="text-md bg-violet-400 py-2 text-white w-80 rounded-md"
+      onClick={handleMenu}
+    >
+      {buttonText}
+    </button>
+  );
+};

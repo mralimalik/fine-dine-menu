@@ -6,7 +6,7 @@ export const MenuContext = createContext();
 
 export const MenuContextProvider = ({ children }) => {
   // const { venueData,setSelectedMenu } = useContext(VenueContext);
-  // const {menuId,venueId} = useParams();
+  const {menuId} = useParams();
 
   // const fetchMenuData = async () => {
   //   try {
@@ -45,6 +45,10 @@ export const MenuContextProvider = ({ children }) => {
       console.log("Error getting menu with no item:", err);
     }
   };
+
+
+ 
+  
 
 
 

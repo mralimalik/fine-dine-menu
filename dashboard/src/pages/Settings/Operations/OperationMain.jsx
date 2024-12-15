@@ -9,6 +9,7 @@ import UpdateTableSheet from "../../../component/UpdateTableSideSheet/UpdateTabl
 // import DeviceManagement from './DeviceManagement/DeviceManagement.jsx';
 import { AuthContext } from "../../../context/AuthContext.jsx";
 import { TableContext } from "../../../context/TablesContext.jsx";
+import ExtraCharges from "./ExtraCharges/ExtraCharges.jsx";
 const OperationMain = () => {
   const [activeTab, setActiveTab] = useState("Tables");
   const { selectedVenue } = useContext(AuthContext);
@@ -17,12 +18,12 @@ const OperationMain = () => {
     switch (activeTab) {
       case "Tables":
         return <Tables />;
-      case "Staff":
-        return;
-      case "ExtraCharges":
-        return;
-      case "ServiceOptions":
-        return;
+      // case "Staff":
+      //   return;
+      case "Extra Charges":
+        return <ExtraCharges/>;
+      // case "ServiceOptions":
+      //   return;
 
       default:
         return null;
@@ -30,13 +31,13 @@ const OperationMain = () => {
   };
 
   return (
-    <div className="operations-main">
+    <div className="operations-main ">
       <div className="px-5 py-5 operation-tab-div bg-white border-t">
         <h3 className="font-medium text-xl">Operations</h3>
       </div>
       {/* Tab Navigation */}
       <div className="flex space-x-5 px-5 pt-3 bg-white ">
-        {["Tables", "Staff", "Extra Charges", "Service Options"].map((tab) => (
+        {["Tables", "Extra Charges"].map((tab) => (
           <button
             key={tab}
             className={`tab-button ${

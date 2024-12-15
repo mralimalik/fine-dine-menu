@@ -37,7 +37,7 @@ const deliverySchema = new mongoose.Schema({
 const pickUpSchema = new mongoose.Schema({
   orderEnabled: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   tipEnabled: {
     type: Boolean,
